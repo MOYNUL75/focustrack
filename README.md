@@ -59,3 +59,7 @@ See [`docs/SETUP_CHECKLIST.md`](docs/SETUP_CHECKLIST.md) for cloud deployment an
 ## Tests
 
 Unit tests are included for the pure calculation modules; database integration and browser/mobile E2E suites remain to be developed. `npm install` timed out during preparation of this ZIP, so a full build is **not verified**.
+
+## Deploy to `github.io` in one upload
+
+See **[GitHub Pages deployment guide](docs/GITHUB_PAGES_DEPLOYMENT.md)**. Upload the ZIP **contents** at the root of the GitHub repo. The included `.github/workflows/deploy.yml` deploys on every push to `main`. GitHub Pages requires Supabase public URL/key repository **variables** and two SQL migrations to support real account data.
