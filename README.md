@@ -1,30 +1,61 @@
-# FocusTrack
+# ◈ FocusTrack
+**Plan. Execute. Review. Improve.**
 
-Plan. Execute. Review. Improve.
+A GitHub-ready React/TypeScript productivity dashboard starter using Vite, Tailwind, Lucide React, Recharts, Supabase, SheetJS and Capacitor.
 
-## Setup
+> **Important:** This is a substantial *development version*, not a fully verified production-grade app. See [`docs/FEATURE_STATUS.md`](docs/FEATURE_STATUS.md) for missing functionality and limitations.
 
-1. Install Node.js 22 and run `npm install`.
-2. Create a Supabase project. In SQL Editor run `supabase/migrations/001_init.sql`.
-3. Copy `.env.example` to `.env`; fill `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` (public anon/publishable key only).
-4. In Supabase Authentication enable Email sign-in and configure your Site URL and allowed redirect URLs.
-5. Run `npm run dev`; open the displayed URL.
-6. Run `npm run build` for production.
+## Quick start
 
-## GitHub Pages
+```bash
+npm install
+cp .env.example .env
+# Edit .env with your real Supabase URL and public anon/publishable key
+npm run dev
+```
 
-Push to the `main` branch; configure Pages to use **GitHub Actions**. Set repository Actions variables `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`. Vite computes the repository base path from `GITHUB_REPOSITORY`. Configure Supabase authentication redirect URLs for the GitHub Pages URL.
+Apply SQL migrations **in order**, 001 then 002, in Supabase SQL Editor. The second migration adds archived snapshots, related ownership checks, and preserves records during task rescheduling.
 
-## Android
+```bash
+npm test
+npm run build
+```
 
-Run `npm install`, `npm run build`, `npx cap add android`, `npx cap sync android`, `npx cap open android`. Build an APK in Android Studio (Build > Build Bundle(s) / APK(s) > Build APK(s)). Install Android SDK and Java as required by Capacitor 7. Android uses the same Supabase instance. The native Android project is generated locally and is not bundled in this repository.
+## Features currently exposed
 
-## Features and limitations
+- Password login/sign-up through Supabase; account-scoped tables and RLS rules.
+- Dashboard task counters, completion progress, current-date view and charts.
+- Quick task creation, editing, deletion, priorities, statuses, search and subtasks.
+- Manual review and reschedule with reason, deadline, action plan and audit trail.
+- Manual daily archiving through `capture_daily_snapshot` on the Daily Review page.
+- Basic goals, habits, weekly calendar, Pomodoro timer and Excel workbook import/export.
+- GitHub Pages workflow and Capacitor configuration for a shared codebase.
 
-Implemented: Supabase email authentication, owner-only RLS, dashboard, quick task creation/edit/delete, statuses, search, basic calendar week view, daily review with atomic rescheduling, basic weekly/monthly charts, goal and habit creation, Pomodoro timer and focus-session saving, Excel export/import preview and basic duplicate checks, responsive navigation and dark mode.
+## Repository
 
-**Not production-complete:** historical analytics are based on current scheduled dates rather than event snapshots; daily review is manually initiated; some advanced features (subtask UI, drag/drop, pagination, advanced filtering, full calendar views, detailed goal progress, notification scheduling, offline sync, persistent user settings, richer Excel reports, comprehensive automated tests) remain to be implemented. Do not treat this scaffold as fully tested or release-ready.
+```
+focustrack/
+  .github/workflows/deploy.yml
+  docs/{SETUP_CHECKLIST,FEATURE_STATUS}.md
+  public/{favicon.svg,manifest.webmanifest}
+  src/
+    components/{Subtasks,DailyArchive}.tsx
+    utils/{analytics,historical}.ts
+    ui.tsx, lib.ts, main.tsx, style.css
+  supabase/migrations/{001_init,002_hardening_and_daily_snapshots}.sql
+  .env.example, .gitignore, .nvmrc
+  capacitor.config.ts, package.json, index.html, vite.config.ts, tsconfig.json
+```
 
-## Security
+See [`docs/SETUP_CHECKLIST.md`](docs/SETUP_CHECKLIST.md) for cloud deployment and Android build steps.
 
-Never commit `.env` or service-role keys. Supabase RLS protects each user-owned table. Additional production hardening should validate cross-table user ownership in database triggers and constraints.
+## Security and portability
+
+- Supabase is intended to be the primary persistent store. There is **no automatic offline sync** yet.
+- Never use a service-role key or database password in frontend code.
+- Do not commit `.env` files. For GitHub Pages, add only the public Supabase variables to Actions secrets.
+- Capacitor config does not include an Android binary or a generated native Android project.
+
+## Tests
+
+Unit tests are included for the pure calculation modules; database integration and browser/mobile E2E suites remain to be developed. `npm install` timed out during preparation of this ZIP, so a full build is **not verified**.

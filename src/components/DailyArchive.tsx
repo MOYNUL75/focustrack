@@ -1,0 +1,8 @@
+import {useEffect,useState} from 'react';import {supabase} from '../lib';import {reportFromSnapshots,type DailySnapshot} from '../utils/historical';
+export default function DailyArchive({uid,date}:{uid:string;date:string}){
+ const [rows,setRows]=useState<DailySnapshot[]>([]),[busy,setBusy]=useState(false),[error,setError]=useState(''),[message,setMessage]=useState('');
+ async function reload(){const{data,error}=await supabase.from('daily_task_snapshots').select('task_id,snapshot_date,status,estimated_minutes,actual_minutes,category').eq('user_id',uid).eq('snapshot_date',date);if(error)setError(error.message);else setRows(data||[])}
+ useEffect(()=>{void reload()},[uid,date]);const summary=reportFromSnapshots(rows);
+ return <section className="panel mt-5"><h3 className="font-bold mb-2">Historical daily archive</h3><p className="muted text-sm">Save a day's task results after review. Archived rows are not overwritten by future reschedules.</p>
+ <div className="flex gap-3 items-center flex-wrap mt-3"><button className="btn" disabled={busy||date>new Date().toLocaleDateString('en-CA')} onClick={async()=>{setBusy(true);setError('');setMessage('');const{data,error}=await supabase.rpc('capture_daily_snapshot',{p_date:date});if(error)setError(error.message);else{setMessage(`Archived ${data} new task record(s).`);await reload()}setBusy(false)}}>Archive selected day</button><span>{rows.length?`${summary.completed}/${summary.eligible} eligible complete (${summary.completionRate}%)`:'No archived tasks for this day'}</span></div>{message&&<p role="status" className="text-sm mt-2">{message}</p>}{error&&<p role="alert" className="text-red-500 mt-2">{error}</p>}</section>
+}
