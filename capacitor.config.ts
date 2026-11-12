@@ -1,0 +1,1 @@
+import type { CapacitorConfig } from '@capacitor/cli';const config:CapacitorConfig={appId:'com.focustrack.app',appName:'FocusTrack',webDir:'dist',server:{androidScheme:'https'}};export default config;

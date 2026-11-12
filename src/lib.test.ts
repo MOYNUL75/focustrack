@@ -1,0 +1,1 @@
+import {describe,it,expect} from 'vitest';import {completionRate} from './lib';describe('completionRate',()=>{it('excludes cancelled tasks',()=>expect(completionRate([{status:'Completed'},{status:'Pending'},{status:'Cancelled'}] as any)).toBe(50));it('handles empty days',()=>expect(completionRate([])).toBe(0))});
